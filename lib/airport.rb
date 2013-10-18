@@ -18,7 +18,7 @@ include Weather
   end
 
   def plane_land plane
-    raise "Too Stormy!" if weather_randomiser <= 20
+    raise "Too Stormy!" if weather == 'Stormy'
     permission_to_land plane
   end
 
@@ -29,7 +29,7 @@ include Weather
   end
 
   def plane_take_off plane
-    raise "Too Stormy!" if weather_randomiser <= 20
+    raise "Too Stormy!" if weather == 'Stormy'
     permission_to_take_off plane
   end
 
