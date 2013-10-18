@@ -18,24 +18,22 @@ include Weather
   end
 
   def plane_land plane
-    raise "Too Stormy!" if weather == 'Stormy'
-    permission_to_land plane
+    @planes << plane
   end
 
   def permission_to_land plane
+    raise "Too Stormy!" if weather == 'Stormy'
     raise "Airport is full" if full?
-    @planes << plane
-    plane.land!
+    plane_land plane
   end
 
   def plane_take_off plane
-    raise "Too Stormy!" if weather == 'Stormy'
-    permission_to_take_off plane
+    @planes.delete_if {| taking_off | taking_off == plane }
   end
 
   def permission_to_take_off plane
-    plane_taking_off = @planes.delete_if {|taking_off| taking_off == plane }
-    plane.take_off!
+    raise "Too Stormy!" if weather == 'Stormy'
+    plane_take_off plane
   end
 
 

@@ -9,28 +9,31 @@ require 'plane'
 # If the airport is full then no planes can land
 describe Airport do
   let(:airport) { Airport.new }
-  let(:plane) { double :plane, land!: true, take_off!: true }
+  let(:plane) { Plane.new }
   
   context 'taking off and landing' do
     it 'a plane can land' do
       expect(airport).to receive(:permission_to_land)
-      airport.permission_to_land(plane)
+      plane.land_at airport
     end
     
     it 'a plane can take off' do
-      airport.permission_to_land(plane)
+      airport.stub(:weather_randomiser).and_return(50)
+      plane.land_at airport
       expect(airport).to receive(:permission_to_take_off)
-      airport.permission_to_take_off(plane)
+      plane.take_off_from airport
     end
 
     it 'airport has 1 plane after plane has landed' do
-      airport.permission_to_land(plane)
+      airport.stub(:weather_randomiser).and_return(50)
+      plane.land_at airport
       expect(airport.planes_landed).to eq 1
     end
 
     it 'airport has 0 plane after plane has taken off' do
-      airport.permission_to_land(plane)
-      airport.permission_to_take_off(plane)
+      airport.stub(:weather_randomiser).and_return(50)
+      plane.land_at airport
+      plane.take_off_from airport
       expect(airport.planes_landed).to eq 0
     end
 
@@ -38,17 +41,20 @@ describe Airport do
   
   context 'traffic control' do
     it 'a plane cannot land if the airport is full' do
+      airport.stub(:weather_randomiser).and_return(50)
       6.times { airport.permission_to_land(plane) }
       expect(lambda { airport.permission_to_land(plane) }).to raise_error(RuntimeError)  
     end
 
     it 'can tell how many planes are at the airport' do
+      airport.stub(:weather_randomiser).and_return(50)
       3.times { airport.permission_to_land(plane) }
       expect(airport.planes_landed).to eq 3
     end
 
     it 'knows if the airport is full' do
-      6.times { airport.permission_to_land(plane) }
+      airport.stub(:weather_randomiser).and_return(50)
+      6.times { plane.land_at airport }
       expect(airport).to be_full
     end
     
@@ -68,13 +74,13 @@ describe Airport do
       it 'a plane cannot take off when there is a storm brewing' do
         airport = Airport.new [plane]
         airport.stub(:weather_randomiser).and_return(5)
-        expect(lambda { airport.plane_take_off(plane) }).to raise_error(RuntimeError) 
+        expect(lambda { plane.take_off_from(airport) }).to raise_error(RuntimeError) 
       end
       
       it 'a plane cannot land in the middle of a storm' do
         airport = Airport.new []
         airport.stub(:weather_randomiser).and_return(5)
-        expect(lambda { airport.plane_land(plane) }).to raise_error(RuntimeError) 
+        expect(lambda { plane.land_at(airport) }).to raise_error(RuntimeError) 
       end
     end
   end

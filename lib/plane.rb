@@ -9,13 +9,15 @@ class Plane
     @flying
   end
 
-  def land! 
+  def land_at airport
     @flying = false
     @landed = true
+    airport.permission_to_land(self)
   end
 
-  def take_off!
+  def take_off_from airport
     initialize
+    airport.permission_to_take_off(self)
   end
 
 

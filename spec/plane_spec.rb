@@ -9,6 +9,7 @@ require 'plane'
 describe Plane do
  
   let(:plane) { Plane.new }
+  let(:airport) { Airport.new }
 
   it 'has a flying status when created' do
     expect(plane).to be_flying
@@ -19,15 +20,17 @@ describe Plane do
   end
   
   it 'can take off' do
-    plane.land!
-    expect(plane).to receive(:take_off!)
-    plane.take_off!
+    airport.stub(:weather_randomiser).and_return(50)
+    plane.land_at airport
+    expect(plane).to receive(:take_off_from)
+    plane.take_off_from airport
   end
   
   it 'changes its status to flying after taking of' do
-    plane.land!
+    airport.stub(:weather_randomiser).and_return(50)
+    plane.land_at airport
     expect(plane).not_to be_flying
-    plane.take_off!
+    plane.take_off_from airport
     expect(plane).to be_flying
   end
 end
